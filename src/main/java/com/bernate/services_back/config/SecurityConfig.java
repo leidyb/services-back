@@ -2,7 +2,7 @@ package com.bernate.services_back.config;
 
 import com.bernate.services_back.security.jwt.JwtAuthEntryPoint;
 import com.bernate.services_back.security.jwt.JwtAuthenticationFilter;
-import com.bernate.services_back.service.UserDetailsServiceImpl; 
+import com.bernate.services_back.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +21,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import java.util.Arrays;
-import java.util.List;
+import java.util.List;   
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) 
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -53,14 +52,13 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-
         return (web) -> web.ignoring().requestMatchers(
-            "/uploads/**", 
-            "/images/**", 
-            "/css/**", 
-            "/js/**",
-            "/favicon.ico",
-            "/error"
+                "/uploads/**",
+                "/images/**",
+                "/css/**",
+                "/js/**",
+                "/favicon.ico",
+                "/error"
         );
     }
 
@@ -75,33 +73,31 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-
-
+                // Reglas para Productos
                 .requestMatchers(HttpMethod.GET, "/api/v1/products", "/api/v1/products/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/products").hasAnyRole("USER", "ADMIN", "PROVEEDOR")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasAnyRole("USER", "ADMIN", "PROVEEDOR")// Ajusta roles
+                .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").hasAnyRole("USER", "ADMIN", "PROVEEDOR")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasRole("ADMIN")
 
-
+                // Reglas para Categorías
                 .requestMatchers(HttpMethod.GET, "/api/v1/categories", "/api/v1/categories/**").permitAll()
-                .requestMatchers("/api/v1/categories/**").hasRole("ADMIN") 
+                .requestMatchers("/api/v1/categories/**").hasRole("ADMIN")
 
-
+                // Reglas para Servicios
                 .requestMatchers(HttpMethod.GET, "/api/v1/services", "/api/v1/services/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/services").hasAnyRole("USER", "ADMIN", "PROVEEDOR")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/services/**").hasAnyRole("USER", "ADMIN", "PROVEEDOR")// Ajusta roles
+                .requestMatchers(HttpMethod.PUT, "/api/v1/services/**").hasAnyRole("USER", "ADMIN", "PROVEEDOR")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/services/**").hasRole("ADMIN")
 
-
+                // Reglas para Calificaciones (Ratings)
                 .requestMatchers(HttpMethod.GET, "/api/v1/ratings/product/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/ratings/service/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/ratings").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/ratings/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/v1/ratings/user/**").authenticated()
 
-
+                // Regla para Perfiles Públicos de Usuario/Vendedor
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/*/profile").permitAll()
-
 
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
@@ -116,8 +112,10 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); 
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173", 
+                "https://tu-frontend-en-render.onrender.com" 
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
         configuration.setExposedHeaders(List.of("Authorization", "Content-Type"));
