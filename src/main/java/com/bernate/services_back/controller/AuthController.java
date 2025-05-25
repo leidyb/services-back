@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap; // Asegúrate de tener estos imports
-import java.util.Map;    // Asegúrate de tener estos imports
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -31,12 +31,12 @@ public class AuthController {
             response.put("message", "Usuario '" + user.getUsername() + "' registrado exitosamente!");
             response.put("userId", user.getId().toString()); 
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(response); // <-- DEVOLVIENDO JSON
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (RuntimeException e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse); // <-- DEVOLVIENDO JSON PARA ERROR
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 

@@ -10,7 +10,7 @@ import com.bernate.services_back.repository.CategoryRepository;
 import com.bernate.services_back.repository.ServiceRepository;
 import com.bernate.services_back.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value; // Para leer de application.properties
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils; // Para limpiar nombres de archivo
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,10 +38,10 @@ public class ServiceService {
     private final ServiceRepository serviceRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-    private final Path serviceImageRootLocation; // Ruta para imágenes de servicios
+    private final Path serviceImageRootLocation;
 
-    private final String baseUploadURLPath = "/uploads"; // Coincide con MvcConfig
-    public static final String SERVICE_IMAGE_SUBDIRECTORY = "service-images"; // Subdirectorio específico
+    private final String baseUploadURLPath = "/uploads";
+    public static final String SERVICE_IMAGE_SUBDIRECTORY = "service-images";
 
     @Autowired
     public ServiceService(ServiceRepository serviceRepository,
@@ -52,7 +52,7 @@ public class ServiceService {
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
 
-        // Inicialización de carpeta para imágenes de servicios
+
         this.serviceImageRootLocation = Paths.get(uploadDir, SERVICE_IMAGE_SUBDIRECTORY).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.serviceImageRootLocation);
@@ -63,17 +63,17 @@ public class ServiceService {
         }
     }
 
-    // --- MÉTODO PARA GUARDAR ARCHIVO DE IMAGEN (ESPECÍFICO PARA SERVICIOS) ---
+
     private String storeServiceImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return null;
         }
-        String originalFilename = StringUtils.cleanPath(file.getOriginalFilename()); // Limpiar nombre
+        String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
         String extension = "";
         if (originalFilename != null && originalFilename.contains(".")) {
             extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
-        // Validar extensión si es necesario (ej. solo .png, .jpg)
+
         if (!extension.matches("\\.(jpeg|jpg|png|gif)$")) {
              throw new RuntimeException("Formato de archivo no permitido para la imagen del servicio.");
         }
@@ -88,7 +88,7 @@ public class ServiceService {
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
-            return uniqueFilename; // Devolvemos solo el nombre del archivo
+            return uniqueFilename;
         } catch (IOException e) {
             throw new RuntimeException("Falló al guardar el archivo de imagen del servicio " + uniqueFilename, e);
         }
@@ -112,7 +112,7 @@ public class ServiceService {
         serviceEntity.setName(serviceDTO.getName());
         serviceEntity.setDescription(serviceDTO.getDescription());
         serviceEntity.setEstimatedPrice(serviceDTO.getEstimatedPrice());
-        // El campo 'imagenes' (nombre del archivo) se manejará en createService/updateService
+
         serviceEntity.setEstado(serviceDTO.getEstado());
 
         if (serviceDTO.getCategoryName() != null && !serviceDTO.getCategoryName().trim().isEmpty()) {
@@ -147,7 +147,7 @@ public class ServiceService {
         return convertToDTO(serviceEntity);
     }
 
-    // MODIFICADO PARA ACEPTAR MultipartFile
+
     @Transactional
     public ServiceDTO createService(ServiceDTO serviceDTO, MultipartFile imageFile) {
         ServiceEntity serviceEntity = convertToEntity(serviceDTO, null);
@@ -157,7 +157,7 @@ public class ServiceService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario ofertante no encontrado: " + authentication.getName()));
         serviceEntity.setOfertadoPor(currentUser);
 
-        String filename = storeServiceImage(imageFile); // Usamos el nuevo método
+        String filename = storeServiceImage(imageFile);
         if (filename != null) {
             serviceEntity.setImagenes(filename);
         }
@@ -167,7 +167,7 @@ public class ServiceService {
         return convertToDTO(savedService);
     }
 
-    // MODIFICADO PARA ACEPTAR MultipartFile
+
     @Transactional
     public ServiceDTO updateService(Long id, ServiceDTO serviceDetailsDTO, MultipartFile imageFile) {
         ServiceEntity existingService = serviceRepository.findById(id)
@@ -191,10 +191,10 @@ public class ServiceService {
                 } catch (IOException e) { System.err.println("Error al eliminar imagen antigua del servicio: " + e.getMessage()); }
             }
         }
-        // Si imageFile es null pero serviceDetailsDTO.getImagenes() tiene un valor (URL existente),
-        // la lógica en convertToEntity ya maneja el campo 'imagenes' del DTO,
-        // pero la imagen en disco no se toca a menos que se suba una nueva o se pida borrar.
-        // Esta parte podría necesitar más lógica si el DTO 'imagenes' se usa para indicar "no cambiar" vs "borrar".
+
+
+
+
 
         ServiceEntity updatedService = serviceRepository.save(existingService);
         return convertToDTO(updatedService);

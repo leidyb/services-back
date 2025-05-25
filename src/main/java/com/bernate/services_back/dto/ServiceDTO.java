@@ -23,22 +23,22 @@ public class ServiceDTO {
     private String description;
 
     @PositiveOrZero(message = "El precio estimado debe ser positivo o cero")
-    private Double estimatedPrice; // Puede ser null
+    private Double estimatedPrice;
 
     @Size(max = 255)
-    private String imagenes; // URL o nombre de archivo (según tu lógica en el servicio)
+    private String imagenes;
 
     @NotNull(message = "El estado de la oferta es obligatorio")
     private EstadoOferta estado;
 
     @NotBlank(message = "El nombre de la categoría es obligatorio")
     @Size(max = 45)
-    private String categoryName; // Nombre de la categoría (tipo SERVICIO)
+    private String categoryName;
 
-    private String ofertadoPorUsername; // Para respuestas
-    // No se suele enviar el ID del ofertante al crear/actualizar, se toma del contexto de seguridad
+    private String ofertadoPorUsername;
 
-    // Constructor explícito para asegurar el orden al mapear desde la entidad
+
+
     public ServiceDTO(Long id, String name, String description, Double estimatedPrice, String imagenes, EstadoOferta estado, String categoryName, String ofertadoPorUsername) {
         this.id = id;
         this.name = name;

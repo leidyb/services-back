@@ -7,11 +7,11 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType; // Para consumes
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile; // Para subida de archivos
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/services")
@@ -40,20 +40,20 @@ public class ServiceController {
         return ResponseEntity.ok(serviceDTO);
     }
 
-    // MODIFICADO para aceptar multipart/form-data
+
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'PROVEEDOR')") // Ajusta los roles
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'PROVEEDOR')")
     public ResponseEntity<ServiceDTO> createService(
-            @Valid @RequestPart("service") ServiceDTO serviceDTO, // Datos JSON del servicio
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile // Archivo de imagen
+            @Valid @RequestPart("service") ServiceDTO serviceDTO,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile
     ) {
         ServiceDTO createdService = serviceService.createService(serviceDTO, imageFile);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdService);
     }
 
-    // MODIFICADO para aceptar multipart/form-data
+
     @PutMapping(value = "/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'PROVEEDOR')") // Ajusta los roles
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'PROVEEDOR')")
     public ResponseEntity<ServiceDTO> updateService(
             @PathVariable Long id,
             @Valid @RequestPart("service") ServiceDTO serviceDetailsDTO,
@@ -68,7 +68,7 @@ public class ServiceController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // O Propietario del servicio
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteService(@PathVariable Long id) {
         try {
             serviceService.deleteService(id);

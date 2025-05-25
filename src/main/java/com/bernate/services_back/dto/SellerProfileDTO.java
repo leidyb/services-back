@@ -10,15 +10,15 @@ import lombok.NoArgsConstructor;
 public class SellerProfileDTO {
     private Long userId;
     private String username;
-    private String nombre;    // Nombre propio del vendedor
-    private String apellido;  // Apellido del vendedor
-    private String ubicacion; // Ubicación del vendedor (si quieres mostrarla)
-    // Puedes añadir más campos públicos del User si lo deseas
+    private String nombre;
+    private String apellido;
+    private String ubicacion;
+
 
     private Double averageProductRating;
     private Long totalProductRatings;
     private Double averageServiceRating;
     private Long totalServiceRatings;
-    private Double overallAverageRating; // Un promedio general
-    private Long totalOverallRatings;    // Total de calificaciones recibidas
+    private Double overallAverageRating;
+    private Long totalOverallRatings;
 }

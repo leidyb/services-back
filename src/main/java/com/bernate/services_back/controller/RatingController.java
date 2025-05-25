@@ -11,8 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/ratings") // Ruta base para calificaciones
-@CrossOrigin(origins = "http://localhost:5173") // O tu config global
+@RequestMapping("/api/v1/ratings")
+@CrossOrigin(origins = "http://localhost:5173")
 public class RatingController {
 
     private final RatingService ratingService;
@@ -29,7 +29,7 @@ public class RatingController {
      * y que no califique dos veces lo mismo.
      */
     @PostMapping
-    @PreAuthorize("isAuthenticated()") // Cualquier usuario autenticado puede intentar calificar
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RatingDTO> createRating(@Valid @RequestBody RatingDTO ratingDTO) {
         RatingDTO createdRating = ratingService.createRating(ratingDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRating);
@@ -43,7 +43,7 @@ public class RatingController {
     public ResponseEntity<Page<RatingDTO>> getRatingsForProduct(
             @PathVariable Long productId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) { // Menos calificaciones por página por defecto
+            @RequestParam(defaultValue = "5") int size) {
         Page<RatingDTO> ratings = ratingService.getRatingsForProduct(productId, page, size);
         return ResponseEntity.ok(ratings);
     }
@@ -82,7 +82,7 @@ public class RatingController {
      * La lógica de permiso está en el servicio, pero también podemos poner @PreAuthorize.
      */
     @DeleteMapping("/{ratingId}")
-    @PreAuthorize("isAuthenticated()") // El servicio verificará si es el dueño o admin
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
         ratingService.deleteRating(ratingId);
         return ResponseEntity.noContent().build();

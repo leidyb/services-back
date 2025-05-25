@@ -5,15 +5,15 @@ import com.bernate.services_back.exception.ResourceNotFoundException;
 import com.bernate.services_back.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page; // Importar Page
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile; // Para subida de archivos
-import org.springframework.http.MediaType; // Para consumes
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
-// Ya no necesitamos importar List si getAllProducts devuelve Page
-// import java.util.List; 
+
+
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -26,7 +26,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // MODIFICADO PARA PAGINACIÓN:
+
     @GetMapping
     public ResponseEntity<Page<ProductDTO>> getAllProducts(
             @RequestParam(required = false) String search,
@@ -42,11 +42,11 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-    // MODIFICADO para aceptar multipart/form-data
+
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<ProductDTO> createProduct(
-            @Valid @RequestPart("product") ProductDTO productDTO, // Los datos JSON del producto
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile // El archivo de imagen
+            @Valid @RequestPart("product") ProductDTO productDTO,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile
     ) {
         ProductDTO createdProduct = productService.createProduct(productDTO, imageFile);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);

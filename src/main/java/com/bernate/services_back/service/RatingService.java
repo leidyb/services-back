@@ -3,7 +3,7 @@ package com.bernate.services_back.service;
 import com.bernate.services_back.dto.RatingDTO;
 import com.bernate.services_back.exception.BadRequestException;
 import com.bernate.services_back.exception.ResourceNotFoundException;
-import com.bernate.services_back.model.*; // User, Product, ServiceEntity, Rating
+import com.bernate.services_back.model.*;
 import com.bernate.services_back.repository.ProductRepository;
 import com.bernate.services_back.repository.RatingRepository;
 import com.bernate.services_back.repository.ServiceRepository;
@@ -44,7 +44,7 @@ public class RatingService {
                 rating.getScore(),
                 rating.getComment(),
                 rating.getCreatedAt(),
-                rating.getRater() != null ? rating.getRater().getUsername() : null, // Se pasa el username
+                rating.getRater() != null ? rating.getRater().getUsername() : null,
                 rating.getProduct() != null ? rating.getProduct().getId() : null,
                 rating.getProduct() != null ? rating.getProduct().getName() : null,
                 rating.getService() != null ? rating.getService().getId() : null,
@@ -93,7 +93,7 @@ public class RatingService {
             if (ratingRepository.existsByRaterAndProduct_Id(rater, ratingDTO.getProductId())) {
                 throw new BadRequestException("Ya has calificado este producto anteriormente.");
             }
-        } else { // serviceId no es null
+        } else {
             service = serviceRepository.findById(ratingDTO.getServiceId())
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Servicio no encontrado con id: " + ratingDTO.getServiceId()));
@@ -118,7 +118,7 @@ public class RatingService {
 
     @Transactional(readOnly = true)
     public Page<RatingDTO> getRatingsForProduct(Long productId, int page, int size) {
-        // Validar que el producto exista primero es una buena práctica
+
         if (!productRepository.existsById(productId)) {
             throw new ResourceNotFoundException("Producto no encontrado con id: " + productId);
         }
@@ -129,7 +129,7 @@ public class RatingService {
 
     @Transactional(readOnly = true)
     public Page<RatingDTO> getRatingsForService(Long serviceId, int page, int size) {
-        // Validar que el servicio exista
+
         if (!serviceRepository.existsById(serviceId)) {
             throw new ResourceNotFoundException("Servicio no encontrado con id: " + serviceId);
         }

@@ -1,6 +1,6 @@
 package com.bernate.services_back.dto;
 
-import com.bernate.services_back.model.CategoryType; // Importa tu Enum
+import com.bernate.services_back.model.CategoryType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CategoryDTO {
 
-    // No incluimos el ID en el DTO para crear, pero sí lo enviaremos en la respuesta.
-    // Por eso lo dejamos aquí, pero al crear se ignorará.
+
+
     private Long id;
 
     @NotBlank(message = "El nombre de la categoría no puede estar vacío")
@@ -24,6 +24,6 @@ public class CategoryDTO {
     @NotNull(message = "El tipo de categoría es obligatorio (PRODUCTO o SERVICIO)")
     private CategoryType tipo;
 
-    // Si añadiste 'descripcion' a tu entidad Category, también deberías añadirla aquí.
-    // private String descripcion;
+
+
 }

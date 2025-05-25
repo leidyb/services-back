@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.stream.Collectors; // Para los roles
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
@@ -30,11 +30,11 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    // MODIFICADO PARA INCLUIR ROLES
+
     public String generateToken(Authentication authentication) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
 
-        // Obtenemos los roles
+
         String roles = userPrincipal.getAuthorities().stream()
                            .map(GrantedAuthority::getAuthority)
                            .collect(Collectors.joining(","));
@@ -44,20 +44,20 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
-                .claim("roles", roles) // <-- AÑADIMOS LOS ROLES COMO UN "CLAIM"
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    // Si usas este método directamente, también deberías pasarle los roles
-    // o cargarlos de alguna manera si es necesario.
-    // Por ahora, el login usa el método de arriba que toma 'Authentication'.
+
+
+
     public String generateTokenFromUsername(String username) {
-        // Esta versión simplificada no incluye roles. Si necesitas que los incluya,
-        // deberías cargar el UserDetails para obtener sus roles.
-        // Para nuestro flujo actual de login, el método generateToken(Authentication) es el que se usa.
+
+
+
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
@@ -78,14 +78,14 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
-    // Método para obtener los roles del token (NUEVO)
+
     public String getRolesFromJWT(String token) {
          Claims claims = Jwts.parserBuilder()
                             .setSigningKey(getSigningKey())
                             .build()
                             .parseClaimsJws(token)
                             .getBody();
-        return claims.get("roles", String.class); // Obtener el claim "roles"
+        return claims.get("roles", String.class);
     }
 
     public boolean validateToken(String authToken) {

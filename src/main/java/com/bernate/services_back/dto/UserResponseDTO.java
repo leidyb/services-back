@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class UserResponseDTO {
     private Long id;
     private String username;
-    private String roles; // O List<String> si prefieres convertirlo aquí
+    private String roles;
 }

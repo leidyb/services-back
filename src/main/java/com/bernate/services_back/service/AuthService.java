@@ -17,8 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.bernate.services_back.dto.SellerProfileDTO; // Nuevo DTO
-import com.bernate.services_back.repository.RatingRepository; // Importar RatingRepository
+import com.bernate.services_back.dto.SellerProfileDTO;
+import com.bernate.services_back.repository.RatingRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,19 +38,19 @@ public class AuthService {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
-    private final RatingRepository ratingRepository; // NUEVA INYECCIÓN
+    private final RatingRepository ratingRepository;
 
     @Autowired
     public AuthService(UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
             JwtTokenProvider tokenProvider,
-            RatingRepository ratingRepository) { // AÑADIR AL CONSTRUCTOR
+            RatingRepository ratingRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
-        this.ratingRepository = ratingRepository; // ASIGNAR
+        this.ratingRepository = ratingRepository;
     }
 
     @Transactional
@@ -69,7 +69,7 @@ public class AuthService {
         user.setApellido(registerRequest.getApellido());
         user.setCorreo(registerRequest.getCorreo());
 
-        // --- ASIGNAR NUEVOS CAMPOS OPCIONALES ---
+
         user.setTelefono(registerRequest.getTelefono());
         user.setUbicacion(registerRequest.getUbicacion());
 
@@ -78,7 +78,7 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    // ... (método authenticateUser y otros se mantienen igual) ...
+
     public AuthResponse authenticateUser(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -134,19 +134,19 @@ public class AuthService {
         long totalRatings = countProductRatings + countServiceRatings;
         double overallAvg = 0.0;
         if (totalRatings > 0) {
-            // Promedio ponderado o simple. Aquí un promedio simple si ambos tienen calificaciones.
-            // O podrías calcularlo sumando todos los scores y dividiendo por totalRatings.
-            // Este es un promedio de los promedios, lo cual no es ideal si un tipo tiene muchas más calificaciones.
-            // Una mejor forma sería obtener todos los scores y calcular un único promedio.
-            // Por ahora, un cálculo más directo:
+
+
+
+
+
             double totalScoreSum = (avgProductRating * countProductRatings) + (avgServiceRating * countServiceRatings);
             overallAvg = totalScoreSum / totalRatings;
             if (Double.isNaN(overallAvg) || Double.isInfinite(overallAvg)) {
-                overallAvg = 0.0; // Evitar NaN si no hay calificaciones
+                overallAvg = 0.0;
             }
         }
 
-        // Redondear a 1 decimal
+
         overallAvg = Math.round(overallAvg * 10.0) / 10.0;
         avgProductRating = Math.round(avgProductRating * 10.0) / 10.0;
         avgServiceRating = Math.round(avgServiceRating * 10.0) / 10.0;
@@ -157,7 +157,7 @@ public class AuthService {
                 user.getUsername(),
                 user.getNombre(),
                 user.getApellido(),
-                user.getUbicacion(), // Asumiendo que tu User tiene getUbicacion()
+                user.getUbicacion(),
                 avgProductRating,
                 countProductRatings,
                 avgServiceRating,

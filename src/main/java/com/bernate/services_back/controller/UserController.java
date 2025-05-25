@@ -1,17 +1,17 @@
 package com.bernate.services_back.controller;
 
 import com.bernate.services_back.dto.SellerProfileDTO;
-import com.bernate.services_back.service.AuthService; // O el servicio donde pusiste getSellerProfileByUsername
+import com.bernate.services_back.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/users") // Ruta base para perfiles de usuario públicos
+@RequestMapping("/api/v1/users")
 @CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
-    private final AuthService authService; // O tu UserService/UserProfileService
+    private final AuthService authService;
 
     @Autowired
     public UserController(AuthService authService) {

@@ -35,25 +35,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
-            logger.info("JWT extraído de la petición: {}", jwt); // LOG 1
+            logger.info("JWT extraído de la petición: {}", jwt);
 
             if (StringUtils.hasText(jwt)) {
                 boolean isValidToken = tokenProvider.validateToken(jwt);
-                logger.info("El token es válido?: {}", isValidToken); // LOG 2
+                logger.info("El token es válido?: {}", isValidToken);
 
                 if (isValidToken) {
                     String username = tokenProvider.getUsernameFromJWT(jwt);
-                    logger.info("Username obtenido del token: {}", username); // LOG 3
+                    logger.info("Username obtenido del token: {}", username);
 
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                    logger.info("UserDetails cargados para el username: {}", userDetails != null ? userDetails.getUsername() : "null"); // LOG 4
+                    logger.info("UserDetails cargados para el username: {}", userDetails != null ? userDetails.getUsername() : "null");
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    logger.info("Autenticación establecida en SecurityContext para el usuario: {}", username); // LOG 5
+                    logger.info("Autenticación establecida en SecurityContext para el usuario: {}", username);
                 }
             } else {
                 logger.info("No se encontró JWT en la cabecera 'Authorization' o el texto estaba vacío.");

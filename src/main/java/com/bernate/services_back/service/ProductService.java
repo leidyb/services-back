@@ -4,28 +4,28 @@ import com.bernate.services_back.dto.ProductDTO;
 import com.bernate.services_back.exception.ResourceNotFoundException;
 import com.bernate.services_back.model.Category;
 import com.bernate.services_back.model.Product;
-import com.bernate.services_back.model.User; // Importar User
+import com.bernate.services_back.model.User;
 import com.bernate.services_back.repository.CategoryRepository;
 import com.bernate.services_back.repository.ProductRepository;
-import com.bernate.services_back.repository.UserRepository; // Importar UserRepository
+import com.bernate.services_back.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication; // Para obtener el usuario autenticado
-import org.springframework.security.core.context.SecurityContextHolder; // Para obtener el usuario autenticado
-import org.springframework.security.core.userdetails.UsernameNotFoundException; // Para usuario no encontrado
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Value; // Para leer de application.properties
-import org.springframework.web.multipart.MultipartFile; // Para manejar subida de archivos
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.UUID; // Para nombres de archivo únicos
+import java.util.UUID;
 
 @Service
 public class ProductService {
@@ -33,39 +33,39 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-    private final Path rootLocation; // Ruta raíz donde se guardan las imágenes de productos
-    @Value("${app.upload.dir:${user.home}/services_back_uploads}") // Inyecta la ruta base de uploads
+    private final Path rootLocation;
+    @Value("${app.upload.dir:${user.home}/services_back_uploads}")
     private String baseUploadDir;
 
-    public static final String PRODUCT_IMAGE_SUBPATH = "product-images"; // Subdirectorio específico
+    public static final String PRODUCT_IMAGE_SUBPATH = "product-images";
 
     @Autowired
     public ProductService(ProductRepository productRepository,
             CategoryRepository categoryRepository,
             UserRepository userRepository,
-            @Value("${app.upload.dir:${user.home}/services_back_uploads}") String uploadDir) { // Inyectar aquí también
+            @Value("${app.upload.dir:${user.home}/services_back_uploads}") String uploadDir) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
-        // Construir la ruta completa al directorio de imágenes de productos
+
         this.rootLocation = Paths.get(uploadDir, PRODUCT_IMAGE_SUBPATH);
         try {
-            Files.createDirectories(this.rootLocation); // Crea el directorio si no existe
+            Files.createDirectories(this.rootLocation);
         } catch (IOException e) {
             throw new RuntimeException(
                     "No se pudo inicializar el directorio de almacenamiento de imágenes de productos", e);
         }
     }
 
-    // Dentro de ProductService.java
+
 private String storeFile(MultipartFile file) {
-    if (file == null || file.isEmpty()) { // Verificación de null para file
+    if (file == null || file.isEmpty()) {
         return null; 
     }
     String originalFilename = file.getOriginalFilename();
-    // Sanitize originalFilename para evitar problemas de path traversal si se usa directamente
-    // Aunque estamos generando un UUID, es buena práctica si alguna vez se usa el original.
-    // String safeOriginalFilename = StringUtils.cleanPath(originalFilename);
+
+
+
 
     String extension = "";
     if (originalFilename != null && originalFilename.contains(".")) {
@@ -77,11 +77,11 @@ private String storeFile(MultipartFile file) {
         Path destinationFile = this.rootLocation.resolve(uniqueFilename).normalize().toAbsolutePath();
         Path rootLocationAbsolute = this.rootLocation.toAbsolutePath().normalize();
 
-        // --- LOGS PARA DEPURACIÓN ---
+
         System.out.println("Root Location (absolute, normalized): " + rootLocationAbsolute);
         System.out.println("Destination File (absolute, normalized): " + destinationFile);
         System.out.println("Parent of Destination File: " + destinationFile.getParent());
-        // --- FIN LOGS ---
+
 
         if (!destinationFile.getParent().equals(rootLocationAbsolute)) {
             System.err.println("ALERTA DE SEGURIDAD: Intento de guardar archivo fuera del directorio raíz.");
@@ -122,7 +122,7 @@ private String storeFile(MultipartFile file) {
     }
 
     @Transactional
-    // Ahora createProduct necesita el MultipartFile
+
     public ProductDTO createProduct(ProductDTO productDTO, MultipartFile imageFile) {
         Product product = convertToEntity(productDTO, null);
 
@@ -134,7 +134,7 @@ private String storeFile(MultipartFile file) {
 
         if (imageFile != null && !imageFile.isEmpty()) {
             String filename = storeFile(imageFile);
-            product.setImagenes(filename); // Guardamos solo el nombre del archivo
+            product.setImagenes(filename);
         }
 
         product.setId(null); 
@@ -144,41 +144,41 @@ private String storeFile(MultipartFile file) {
 
 
     @Transactional
-    // updateProduct también necesitará el MultipartFile (opcional)
+
     public ProductDTO updateProduct(Long id, ProductDTO productDetailsDTO, MultipartFile imageFile) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado para actualizar con id: " + id));
 
-        convertToEntity(productDetailsDTO, existingProduct); // Mapea campos del DTO
+        convertToEntity(productDetailsDTO, existingProduct);
 
         if (imageFile != null && !imageFile.isEmpty()) {
-            // Opcional: Eliminar la imagen antigua si existe
+
             if (existingProduct.getImagenes() != null && !existingProduct.getImagenes().isEmpty()) {
                 try {
                     Path oldFilePath = rootLocation.resolve(existingProduct.getImagenes());
                     Files.deleteIfExists(oldFilePath);
                 } catch (IOException e) {
-                    // Loggear el error, pero no necesariamente detener la actualización
+
                     System.err.println("Error al eliminar imagen antigua: " + e.getMessage());
                 }
             }
             String filename = storeFile(imageFile);
             existingProduct.setImagenes(filename);
         } else if (productDetailsDTO.getImagenes() == null || productDetailsDTO.getImagenes().isEmpty()) {
-            // Si en el DTO 'imagenes' viene vacío o null, y queremos eliminar la imagen existente
+
             if (existingProduct.getImagenes() != null && !existingProduct.getImagenes().isEmpty()) {
                  try {
                     Path oldFilePath = rootLocation.resolve(existingProduct.getImagenes());
                     Files.deleteIfExists(oldFilePath);
-                    existingProduct.setImagenes(null); // Limpiar el campo en la BD
+                    existingProduct.setImagenes(null);
                 } catch (IOException e) {
                     System.err.println("Error al eliminar imagen antigua: " + e.getMessage());
                 }
             }
         }
-        // Si productDetailsDTO.getImagenes() tiene un valor pero imageFile es null, 
-        // significa que el usuario no subió una nueva imagen pero no quiere borrar la existente.
-        // En ese caso, no tocamos existingProduct.getImagenes() a menos que se indique explícitamente.
+
+
+
 
         Product updatedProduct = productRepository.save(existingProduct);
         return convertToDTO(updatedProduct);
@@ -189,25 +189,25 @@ private String storeFile(MultipartFile file) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado para eliminar con id: " + id));
 
-        // Eliminar imagen asociada si existe
+
         if (product.getImagenes() != null && !product.getImagenes().isEmpty()) {
             try {
                 Path filePath = rootLocation.resolve(product.getImagenes());
                 Files.deleteIfExists(filePath);
             } catch (IOException e) {
-                // Loggear el error pero continuar con la eliminación del producto de la BD
+
                 System.err.println("Error al eliminar archivo de imagen: " + e.getMessage());
             }
         }
         productRepository.deleteById(id);
     }
 
-    // --- Métodos Privados de Mapeo ---
+
     private ProductDTO convertToDTO(Product product) {
         String imageUrl = null;
         if (product.getImagenes() != null && !product.getImagenes().isEmpty()) {
-            // Construimos la URL relativa que el frontend usará.
-            // MvcConfig mapea /uploads/product-images/ a la carpeta física.
+
+
             imageUrl = "/uploads/" + PRODUCT_IMAGE_SUBPATH + "/" + product.getImagenes();
         }
 
@@ -217,7 +217,7 @@ private String storeFile(MultipartFile file) {
                 product.getDescription(),
                 product.getPrice(),
                 product.getStock(),
-                imageUrl, // Usamos la URL construida
+                imageUrl,
                 product.getEstado(),
                 product.getCategoria() != null ? product.getCategoria().getNombre() : null,
                 product.getOfertadoPor() != null ? product.getOfertadoPor().getUsername() : null
@@ -225,8 +225,8 @@ private String storeFile(MultipartFile file) {
     }
 
 
-    // Modificamos convertToEntity para que pueda actualizar un producto existente o
-    // crear uno nuevo
+
+
     private Product convertToEntity(ProductDTO productDTO, Product productToUpdate) {
         Product product = (productToUpdate == null) ? new Product() : productToUpdate;
 
@@ -234,18 +234,18 @@ private String storeFile(MultipartFile file) {
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         product.setStock(productDTO.getStock());
-        // El campo 'imagenes' se maneja por separado con el archivo subido
-        // Pero si el DTO trae una URL (ej. al editar y no cambiar imagen), la podríamos conservar
+
+
         if (productToUpdate != null && productDTO.getImagenes() != null && !productDTO.getImagenes().contains("/uploads/")) {
-             // Si estamos actualizando y el DTO.imagenes NO es una URL de nuestro servidor,
-             // y NO se subió un nuevo archivo, podríamos querer mantener la imagen existente.
-             // Sin embargo, si es una URL externa, la entidad solo guarda el nombre del archivo.
-             // Esto necesita una lógica más clara: ¿el DTO envía el nombre del archivo o la URL completa?
-             // Por ahora, dejaremos que el método update maneje la lógica de si se sube un nuevo archivo.
+
+
+
+
+
         } else if (productToUpdate == null && productDTO.getImagenes() != null) {
-             // Al crear, si el DTO trae 'imagenes' como string (URL externa), podríamos guardarla
-             // pero nuestra lógica actual es para subir archivos.
-             // Por ahora, la entidad 'imagenes' se poblará con el resultado de storeFile.
+
+
+
         }
 
         product.setEstado(productDTO.getEstado());

@@ -1,8 +1,8 @@
 package com.bernate.services_back.repository;
 
 import com.bernate.services_back.model.Rating;
-import com.bernate.services_back.model.User; // Asegúrate de tener esta importación
-// No necesitas Product o ServiceEntity aquí si buscas por ID
+import com.bernate.services_back.model.User;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,13 +19,13 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
     Page<Rating> findByServiceId(Long serviceId, Pageable pageable);
     Page<Rating> findByRaterId(Long raterId, Pageable pageable);
 
-    // --- ASEGÚRATE DE QUE ESTOS MÉTODOS ESTÉN DEFINIDOS ASÍ ---
-    // Spring Data JPA entenderá que quieres buscar un Rating donde
-    // el campo 'rater' (que es un User) coincida con el User provisto
-    // Y donde el campo 'product' (que es un Product) tenga un 'id' que coincida con el Long provisto.
+
+
+
+
     boolean existsByRaterAndProduct_Id(User rater, Long productId);
     boolean existsByRaterAndService_Id(User rater, Long serviceId);
-    // --- FIN DE MÉTODOS A ASEGURAR ---
+
 
     @Query("SELECT COALESCE(AVG(r.score), 0.0) FROM Rating r WHERE r.product.ofertadoPor = :provider")
     Double getAverageRatingForProviderProducts(@Param("provider") User provider);

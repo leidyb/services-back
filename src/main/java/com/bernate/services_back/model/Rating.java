@@ -50,7 +50,7 @@ public class Rating {
         createdAt = LocalDateTime.now();
     }
 
-    // Constructor útil para el servicio
+
     public Rating(User rater, Integer score, String comment, Product product, ServiceEntity service) {
         this.rater = rater;
         this.score = score;

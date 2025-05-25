@@ -29,10 +29,10 @@ public class RegisterRequest {
     @Size(max = 45)
     private String correo;
 
-    // --- NUEVOS CAMPOS OPCIONALES ---
+
     @Size(max = 45, message = "El teléfono no puede exceder los 45 caracteres")
-    private String telefono; // Opcional, no @NotBlank
+    private String telefono;
 
     @Size(max = 100, message = "La ubicación no puede exceder los 100 caracteres")
-    private String ubicacion; // Opcional, no @NotBlank
+    private String ubicacion;
 }

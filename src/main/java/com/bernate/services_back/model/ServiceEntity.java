@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "services") // Nombre de la tabla en la base de datos
+@Table(name = "services")
 @Data
 @NoArgsConstructor
 public class ServiceEntity {
@@ -30,16 +30,16 @@ public class ServiceEntity {
 
     @PositiveOrZero(message = "El precio estimado debe ser positivo o cero")
     @Column(name = "estimated_price")
-    private Double estimatedPrice; // Puede ser null si el precio es "a convenir"
+    private Double estimatedPrice;
 
     @Size(max = 255, message = "La URL de la imagen no puede exceder los 255 caracteres")
-    @Column(length = 255, nullable = true) // Hacemos la imagen explícitamente opcional
-    private String imagenes; // URL de la imagen principal o nombre del archivo si se sube
+    @Column(length = 255, nullable = true)
+    private String imagenes;
 
     @NotNull(message = "El estado de la oferta es obligatorio")
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
-    private EstadoOferta estado; // Reutilizamos el Enum EstadoOferta
+    private EstadoOferta estado;
 
     @NotNull(message = "La categoría es obligatoria")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,10 +48,10 @@ public class ServiceEntity {
 
     @NotNull(message = "El usuario que oferta el servicio es obligatorio")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "offered_by_user_id", referencedColumnName = "id", nullable = false) // Asume que PK en User es 'id'
+    @JoinColumn(name = "offered_by_user_id", referencedColumnName = "id", nullable = false)
     private User ofertadoPor;
 
-    // Constructor para facilitar la creación (opcional si usas Lombok @AllArgsConstructor y te sirve)
+
     public ServiceEntity(String name, String description, Double estimatedPrice, String imagenes, EstadoOferta estado, Category categoria, User ofertadoPor) {
         this.name = name;
         this.description = description;

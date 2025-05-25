@@ -1,6 +1,6 @@
-package com.bernate.services_back.security; // O el paquete donde esté tu User.java si lo pones allí
+package com.bernate.services_back.security;
 
-import com.bernate.services_back.model.User; // Tu entidad User
+import com.bernate.services_back.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +14,7 @@ public class CustomUserDetails implements UserDetails {
 
     private Long id;
     private String username;
-    private String password; // Este será el hash de la contraseña
+    private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(Long id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
@@ -29,20 +29,20 @@ public class CustomUserDetails implements UserDetails {
             (user.getRoles() == null || user.getRoles().trim().isEmpty()) ?
             Collections.emptyList() :
             Arrays.stream(user.getRoles().split(","))
-                    .map(String::trim) // Quitar espacios alrededor de cada rol
-                    .filter(role -> !role.isEmpty()) // Filtrar strings vacíos si hay comas extra
-                    .map(SimpleGrantedAuthority::new) // Convertir cada string de rol a SimpleGrantedAuthority
+                    .map(String::trim)
+                    .filter(role -> !role.isEmpty())
+                    .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
 
         return new CustomUserDetails(
-                user.getId(), // Asumiendo que tu entidad User tiene un getter getId()
+                user.getId(),
                 user.getUsername(),
-                user.getPassword(), // Asumiendo que tu entidad User tiene un getter getPassword() para el hash
+                user.getPassword(),
                 authorities
         );
     }
 
-    public Long getId() { // Getter para el ID, necesario para #principal.id en SpEL
+    public Long getId() {
         return id;
     }
 
@@ -61,8 +61,8 @@ public class CustomUserDetails implements UserDetails {
         return username;
     }
 
-    // Métodos restantes de UserDetails (puedes dejarlos como true por ahora,
-    // o implementar lógica real si la necesitas para bloquear/deshabilitar cuentas)
+
+
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }

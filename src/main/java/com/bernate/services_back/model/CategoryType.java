@@ -1,4 +1,4 @@
-package com.bernate.services_back.model; // o com.bernate.services_back.model.enums
+package com.bernate.services_back.model;
 
 public enum CategoryType {
     PRODUCTO,

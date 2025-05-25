@@ -1,27 +1,27 @@
 package com.bernate.services_back.controller;
 
 import com.bernate.services_back.dto.UpdateUserRolesRequest;
-import com.bernate.services_back.dto.UserResponseDTO; // Asegúrate de importar este DTO
-import com.bernate.services_back.exception.ResourceNotFoundException; // Importa si tu servicio la lanza
+import com.bernate.services_back.dto.UserResponseDTO;
+import com.bernate.services_back.exception.ResourceNotFoundException;
 import com.bernate.services_back.model.User;
-import com.bernate.services_back.service.AuthService; // O UserService si la lógica está allí
+import com.bernate.services_back.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize; // Para proteger los métodos
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List; // Importar List
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin") // Ruta base para todos los endpoints de este controlador
-@CrossOrigin(origins = "http://localhost:5173") // O tu configuración global de CORS
+@RequestMapping("/api/admin")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AdminController {
 
     @Autowired
-    private AuthService authService; // Asumiendo que la lógica de usuario está en AuthService
+    private AuthService authService;
 
     /**
      * Endpoint para actualizar los roles de un usuario específico.
