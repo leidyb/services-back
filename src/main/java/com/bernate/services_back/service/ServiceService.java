@@ -31,10 +31,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.springframework.beans.factory.annotation.Value;
 @Service
 public class ServiceService {
-
+    public static final String PRODUCT_IMAGE_SUBDIRECTORY = "service-images";
     private final ServiceRepository serviceRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
@@ -42,7 +42,8 @@ public class ServiceService {
 
     private final String baseUploadURLPath = "/uploads";
     public static final String SERVICE_IMAGE_SUBDIRECTORY = "service-images";
-
+    @Value("${app.backend.public-url}") // Inyectar la URL pública del backend
+    private String backendPublicUrl;
     @Autowired
     public ServiceService(ServiceRepository serviceRepository,
                           CategoryRepository categoryRepository,
@@ -95,9 +96,10 @@ public class ServiceService {
     }
 
     private ServiceDTO convertToDTO(ServiceEntity serviceEntity) {
-        String imageUrl = null;
+         String imageUrl = null;
         if (serviceEntity.getImagenes() != null && !serviceEntity.getImagenes().isEmpty()) {
-            imageUrl = baseUploadURLPath + "/" + SERVICE_IMAGE_SUBDIRECTORY + "/" + serviceEntity.getImagenes();
+            // Construye la URL pública completa
+            imageUrl = backendPublicUrl + "/uploads/" + PRODUCT_IMAGE_SUBDIRECTORY + "/" + serviceEntity.getImagenes();
         }
         return new ServiceDTO(
                 serviceEntity.getId(), serviceEntity.getName(), serviceEntity.getDescription(),
